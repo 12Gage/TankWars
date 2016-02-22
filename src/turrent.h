@@ -25,7 +25,6 @@ using namespace std;
 #include "SDL_ttf.h"
 #endif
 
-#include <vector>
 #include "turretbullet.h"
 class Turrent{
 
@@ -67,10 +66,10 @@ public:
 
 	//turrent's creation method using passed in values for renderer, player number, path to the texture
 	//starting position X, starting position Y
-	Turrent(SDL_Renderer *renderer, string filePath, string audioPath, float x, float y);
+	Turrent(SDL_Renderer * renderer, string filePath, string audioPath, float x, float y);
 
 	//update the turrent using the passed in deltaTime
-	void Update(float deltaTime, SDL_Rect tankRect);
+	void Update(float deltaTIme, SDL_Rect tankRect);
 
 	//draw the turret main's passed in renderer
 	void Draw(SDL_Renderer *renderer);
@@ -81,3 +80,4 @@ public:
 	//create a bullet
 	void CreateBullet(SDL_Rect target);
 };
+

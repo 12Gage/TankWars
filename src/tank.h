@@ -74,7 +74,7 @@ public:
 
 	//player's creation method using passed in valuues for renderer, player number, path to the texture
 	//starting position X, starting position Y
-	Tank(SDL_Renderer *renderer, int pNum, string filePath, string audioPath, float x, float y);
+	Tank (SDL_Renderer *renderer, int pNum, string filePath, string sudioPath, float x, float y);
 
 	//method to allow the player the move via joystock axis
 	void OnControllerAxis(const SDL_ControllerAxisEvent event);

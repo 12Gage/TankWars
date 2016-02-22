@@ -69,10 +69,10 @@ Tank::Tank(SDL_Renderer *renderer, int pNum, string filePath, string audioPath, 
 	for(int i = 0; i < 10; i++)
 	{
 		//create the bullet and move offscreen, out of the game play area
-		TankBullet tmpBullet(renderer,bulletPath,-1000,-1000,0,0);
+		//TankBullet tmpBullet(renderer,bulletPath,-1000,0,0);
 
 		//add to bulletlist
-		bulletList.push_back(tmpBullet);
+		//bulletList.push_back(tmpBullet);
 	}
 
 }

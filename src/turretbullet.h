@@ -39,7 +39,7 @@ public:
 	//poistion for the turrent and player
 	SDL_Point turret, player;
 
-	//distance between the z 
+	//distance between the z
 	float distance;
 
 	//bullet creaton method, requirees the renderer, a path to the needed image, an Xposition, Y positon
@@ -57,5 +57,5 @@ public:
 
 	//bullet start
 	void Start(SDL_Rect playerPos, SDL_Rect turretPos);
-	
+
 };

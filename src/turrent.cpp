@@ -10,7 +10,7 @@ Turrent::Turrent(SDL_Renderer *renderer, string filePath, string audioPath, floa
 	fire = Mix_LoadWAV((audioPath + "fire.wav").c_str());
 
 	//create the turrent base file path
-	string basePath = filePath + "turentBase.png";
+	string basePath = filePath + "turrentBase.png";
 
 	//load the image into the texture
 	tBase = IMG_LoadTexture(renderer, basePath.c_str());
@@ -58,7 +58,7 @@ Turrent::Turrent(SDL_Renderer *renderer, string filePath, string audioPath, floa
 	}
 
 	//random null linit
-	srand(time(NULL));
+	srand(time_t(NULL));
 }
 
 //turrent draw method

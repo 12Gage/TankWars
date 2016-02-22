@@ -56,7 +56,7 @@ void TurretBullet::Draw(SDL_Renderer *renderer) {
 }
 
 //bullet drawmethod
-void TurretBullet::Upate(float deltaTime) // float delta
+void TurretBullet::Update(float deltaTime) // float delta
 {
 	//get direction values to move with
 	float vX = ((player.x - 32) - turret.x) / distance;

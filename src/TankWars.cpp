@@ -73,7 +73,7 @@ int thisTime = 0;
 int lastTime = 0;
 
 //main start
-int main(){
+int main(int argc, char *argv[]){
 
 	//create the SDL Window - start
 	//start SDL2

@@ -47,7 +47,7 @@ public:
 
 
 	//bullet upate - requires deltaTime be passed
-	void Upate(float deltaTime);
+	void Update(float deltaTime);
 
 	//bulllet draw - requires renderer be passed
 	void Draw(SDL_Renderer *renderer);

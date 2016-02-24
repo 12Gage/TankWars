@@ -7,7 +7,7 @@ Turrent::Turrent(SDL_Renderer *renderer, string filePath, string audioPath, floa
 	active = true;
 
 	//fire sound
-	fire = Mix_LoadWAV((audioPath + "fire.wav").c_str());
+	fire = Mix_LoadWAV((audioPath + "laser.wav").c_str());
 
 	//create the turrent base file path
 	string basePath = filePath + "turrentBase.png";
@@ -32,8 +32,8 @@ Turrent::Turrent(SDL_Renderer *renderer, string filePath, string audioPath, floa
 	baseRect.h = h;
 
 	//set the SDL_Rect X and Y for the barrel (used Photoshop to find this info)
-	barrelRect.x = x + 34;
-	barrelRect.y = y + 34;
+	barrelRect.x = x + 20;
+	barrelRect.y = y - 30;
 
 	//use SDL_QueryTexture to get the W and H of the barrel's texture
 	SDL_QueryTexture(tBarrel, NULL, NULL, &w, &h);
@@ -41,8 +41,8 @@ Turrent::Turrent(SDL_Renderer *renderer, string filePath, string audioPath, floa
 	barrelRect.h = h;
 
 	//create the center point of the barrel texture for rotation (used photoshop to fin this info)
-	center.x = 12;
-	center.y = 12;
+	center.x = 0;
+	center.y = 0;
 
 	//string to create the path to the player's bullert image
 	string bulletPath = filePath + "tBullet.png";
@@ -59,12 +59,42 @@ Turrent::Turrent(SDL_Renderer *renderer, string filePath, string audioPath, floa
 
 	//random null linit
 	srand(time_t(NULL));
+
+	//update the float values for movement
+	posB_X = baseRect.x;
+	posB_Y = baseRect.y;
+
+	posT_X = barrelRect.x;
+	posT_Y = barrelRect.y;
+
+}
+
+ //tank moves the turrent in X
+void Turrent::TankMoveX(float tankSpeed, float deltaTime)
+{
+	posB_X += (tankSpeed) * deltaTime;
+	posT_X += (tankSpeed) * deltaTime;
+
+	//update bullet position with code to account for precision loss
+	baseRect.x = (int)(posB_X + 0.5f);
+	barrelRect.x = (int)(posT_X + 0.5f);
+}
+
+//tank moves the turrent in Y
+void Turrent::TankMoveY(float tankSpeed, float deltaTime)
+{
+	posB_Y += (tankSpeed) * deltaTime;
+	posT_Y += (tankSpeed) * deltaTime;
+
+	//update bullet position with code to account for precision loss
+	baseRect.y = (int)(posB_Y + 0.5f);
+	barrelRect.y = (int)(posT_Y + 0.5f);
 }
 
 //turrent draw method
 void Turrent::Draw(SDL_Renderer *renderer)
 {
-	
+
 	 //draw the turret's bullets
 	for(int i = 0; i < bulletList.size(); i++)
 	{
@@ -75,7 +105,7 @@ void Turrent::Draw(SDL_Renderer *renderer)
 			bulletList[i].Draw(renderer);
 		}
 	}
-	
+
 	//draw the base
 	SDL_RenderCopy(renderer, tBase, NULL, &baseRect);
 
@@ -93,12 +123,14 @@ void Turrent::Update(float deltaTime, SDL_Rect tankRect)
 
 	if(SDL_GetTicks() > fireTime){
 
-		CreateBullet(tankRect);
+		if(baseRect.x > 0 && baseRect.x < 1024 && baseRect.y > 0 && baseRect.y < 768){
+			CreateBullet(tankRect);
+		}
 
 		fireTime = SDL_GetTicks() + (rand() % 3+ 1) * 1000;
 	}
 
-	
+
 	//update the turret's bullets
 	for(int i =0; i < bulletList.size(); i ++)
 	{
@@ -109,13 +141,13 @@ void Turrent::Update(float deltaTime, SDL_Rect tankRect)
 			bulletList[i].Update(deltaTime);
 		}
 	}
-	
+
 }
 
 //create a bullet
 void Turrent::CreateBullet(SDL_Rect target)
 {
-	
+
 	//see if there is a bullet active to fire
 	for(int i = 0; i < bulletList.size(); i++)
 	{
@@ -143,5 +175,5 @@ void Turrent::CreateBullet(SDL_Rect target)
 			break;
 		}
 	}
-	
+
 }

@@ -1,8 +1,20 @@
+#include <iostream>
+#include <stdio.h>
+#include <string>
+#include <stdint.h>
+#include <sstream>
+
+using namespace std;
+
 #if defined(__APPLE__)
 #include "SDL2/SDL.h"
 #include "SDL2_image/SDL_image.h"
 #include "SDL2_mixer/SDL_mixer.h"
 #include "SDL2_ttf/SDL_ttf.h"
+
+string currentWorkingDirectory(getcwd(NULL, 0));
+string images_dir = currentWorkingDirectory + "/src/";
+string audio_dir = currentWorkingDirectory + "/src/";
 #endif
 
 #if defined(_WIN32) || (_WIN64)
@@ -13,6 +25,7 @@
 #include <direct.h>
 #define getcw _getcw
 
+string currentWorkingDirectory(getcwd(NULL, 0));
 string images_dir = currentWorkingDirectory + "/src/";
 string audio_dir = currentWorkingDirectory + "/src/";
 
@@ -26,46 +39,94 @@ string audio_dir = currentWorkingDirectory + "/src/";
 
 #include <unistd.h>
 
+string currentWorkingDirectory(getcwd(NULL, 0));
 string images_dir = currentWorkingDirectory + "/src/";
 string audio_dir = currentWorkingDirectory + "/src/";
 
 #endif
 
-#include <iostream>
-#include <math.h>
-#include <stdio.h>
-#include <string>
-#include <vector>
-#include <stdint.h>
 
 #include "tank.h"
 #include "turrent.h"
 
-using namespace std;
 
-#if defined(__APPLE__)
-//string car to hold the current working directory on _APPLE_
-string currentWorkingDirectory(getcwd(NULL, 0));
+//variable for what font to use
+TTF_Font *font;
 
-//create a string to link the images folder on _APPLE_
-string images_dir = currentWorkingDirectory + "/src/";
+//font color var
+SDL_Color colorP1 = {255,255,255,255};
 
-//week 5
-//create a string to link the audio folder on _APPLE_
-string audio_dir = currentWorkingDirectory + "/src/";
-#endif
+//texture for the player hit text
+SDL_Texture *playerTexture, *turretTexture;
 
-#if defined(_WIN32) || (_WIN64)
-//string car to hold the current working directory on _APPLE_
-string currentWorkingDirectory(getcwd(NULL, 0));
+//surface for the player hit text
+SDL_Surface *playerSurface, *turretSurface;
 
-#endif
+//SDL_rects for the player hit textures
+SDL_Rect playerPos, turretPos;
 
-#if defined(__linux__)
-//string car to hold the current working directory on _APPLE_
-string currentWorkingDirectory(getcwd(NULL, 0));
+int playerHealth = 100;
 
-#endif
+string tempText = "";
+
+void PlayerText(SDL_Renderer *renderer){
+	//fix for to_string problems on linux
+
+	string Result;	//string which will contain the results
+
+	ostringstream convert; 	//stream used for the conversion
+
+	convert << playerHealth;	//insert the textual representation of 'Number' in the characters in the stream
+
+	Result = convert.str(); //	set 'Result to the contents of the stream
+
+	//create the text for the font texture
+	tempText = "Player Health: " + Result;
+
+	//surface for font string
+	playerSurface = TTF_RenderText_Solid(font, tempText.c_str(), colorP1);
+
+	//creat the player score texture
+	playerTexture = SDL_CreateTextureFromSurface(renderer, playerSurface);
+
+	//get the Width and Height fo the texture
+	SDL_QueryTexture(playerTexture, NULL, NULL, &playerPos.w, &playerPos.h);
+
+	SDL_FreeSurface(playerSurface);
+}
+
+void TurretText(SDL_Renderer *renderer, int turretNum){
+	//fix for to_string problems on linux
+
+	string Result;	//string which will contain the results
+
+	ostringstream convert; 	//stream used for the conversion
+
+	convert << turretNum;	//insert the textual representation of 'Number' in the characters in the stream
+
+	Result = convert.str(); //	set 'Result to the contents of the stream
+
+	//create the text for the font texture
+	tempText = "Turret " + Result + " was the las hit...";
+
+	//for when the game starts still to no turret hit
+	if(turretNum == 0){
+		//create the text for the font texture
+		tempText = "No Turret has been hit..";
+	}
+
+	//create surface
+	turretSurface = TTF_RenderText_Solid(font, tempText.c_str(), colorP1);
+
+	//create texture
+	turretTexture = SDL_CreateTextureFromSurface(renderer, turretSurface);
+
+	//get the width and height of the texture
+	SDL_QueryTexture(turretTexture, NULL, NULL, &turretPos.w, &turretPos.h);
+
+	SDL_FreeSurface(turretSurface);
+
+}
 
 //deltaTime var intializartion - for frame rate independence
 float deltaTime = 0.0;
@@ -73,7 +134,7 @@ int thisTime = 0;
 int lastTime = 0;
 
 //main start
-int main(int argc, char *argv[]){
+int main(){
 
 	//create the SDL Window - start
 	//start SDL2
@@ -130,6 +191,47 @@ int main(int argc, char *argv[]){
 
 	Turrent turret1 = Turrent(renderer, images_dir.c_str(), audio_dir.c_str(), 800.0f, 500.0f);
 
+	Turrent turret2 = Turrent(renderer, images_dir.c_str(), audio_dir.c_str(), 1600.0f, 250.0f);
+	Turrent turret3 = Turrent(renderer, images_dir.c_str(), audio_dir.c_str(), 400.0f, 1000.0f);
+	Turrent turret4 = Turrent(renderer, images_dir.c_str(), audio_dir.c_str(), 1600.0f, 1250.0f);
+
+	SDL_Texture *bkgd = IMG_LoadTexture(renderer, (images_dir + "ground.png").c_str());
+
+	SDL_Rect bkgdRect;
+
+	bkgdRect.x = 0;
+
+	bkgdRect.y = 0;
+
+	bkgdRect.w = 2048;
+
+	bkgdRect.h = 1536;
+
+	float X_pos = 0.0f;
+
+	float Y_pos = 0.0f;
+
+	//init the ttf engine
+	TTF_Init();
+
+	//load the font
+	font = TTF_OpenFont((images_dir + "Long_Shot.ttf").c_str(), 40);
+
+	//x and y for player's text
+	playerPos.x = 10;
+	playerPos.y = 10;
+
+	//x and y for the turret's text
+	turretPos.x = 600;
+	turretPos.y = 10;
+
+	//create the initial player text
+	PlayerText(renderer);
+
+	//create the initial turret text
+	TurretText(renderer, 0);
+
+
 	//main game loop start
 
 	while(!quit)
@@ -166,28 +268,212 @@ int main(int argc, char *argv[]){
 				break;
 
 			case SDL_CONTROLLERAXISMOTION:
-				tank1.OnControllerAxis(e.caxis);
+
+				//tank1.OnControllerAxis(e.caxis);
+
 			break;
 
 			}
 
-
-
-
 		}//POLL EVENT
+
+		//get values for both the X and Y of the controller
+		const Sint16 Xvalue = SDL_GameControllerGetAxis(gGameController0,SDL_CONTROLLER_AXIS_LEFTX);
+		const Sint16 Yvalue = SDL_GameControllerGetAxis(gGameController0,SDL_CONTROLLER_AXIS_LEFTY);
+
+		tank1.OnControllerAxis(Xvalue,Yvalue);
 
 		//upate player 1 tank
 		tank1.Update(deltaTime);
 
+		//move background
+		if((tank1.posRect.x >= 1024 - tank1.posRect.w) && (tank1.Xvalue > 8000)){
+
+			//adjust position floats based on speed, direction and deltaTime
+			X_pos -= (tank1.speed)*deltaTime;
+
+			if((bkgdRect.x > - 1024)){
+				//update bullet position with code to account for precision loss
+				bkgdRect.x = (int)(X_pos + 0.5f);
+				//move the turret
+				turret1.TankMoveX(-tank1.speed, deltaTime);
+				turret2.TankMoveX(-tank1.speed, deltaTime);
+				turret3.TankMoveX(-tank1.speed, deltaTime);
+				turret4.TankMoveX(-tank1.speed, deltaTime);
+
+			}else{
+
+			X_pos = bkgdRect.x;
+
+			}
+
+		}
+
+			if((tank1.posRect.x <= 0 + tank1.posRect.w) && (tank1.Xvalue < 8000)){
+
+			//adjust position floats based on speed, direction and deltaTime
+			X_pos += (tank1.speed)*deltaTime;
+
+			if((bkgdRect.x < 0)){
+				//update bullet position with code to account for precision loss
+				bkgdRect.x = (int)(X_pos + 0.5f);
+				//move the turret
+				turret1.TankMoveX(tank1.speed, deltaTime);
+				turret2.TankMoveX(tank1.speed, deltaTime);
+				turret3.TankMoveX(tank1.speed, deltaTime);
+				turret4.TankMoveX(tank1.speed, deltaTime);
+
+			}else{
+				X_pos = bkgdRect.x;
+			}
+
+		}
+
+			//move background
+			if((tank1.posRect.y >= 1024 - tank1.posRect.h) && (tank1.Yvalue > 8000)){
+
+				//adjust position floats based on speed, direction and deltaTime
+				Y_pos -= (tank1.speed)*deltaTime;
+
+				if((bkgdRect.y > - 1024)){
+					//update bullet position with code to account for precision loss
+					bkgdRect.y = (int)(Y_pos + 0.5f);
+					//move the turret
+					turret1.TankMoveY(-tank1.speed, deltaTime);
+					turret2.TankMoveY(-tank1.speed, deltaTime);
+					turret3.TankMoveY(-tank1.speed, deltaTime);
+					turret4.TankMoveY(-tank1.speed, deltaTime);
+
+				}else{
+
+				Y_pos = bkgdRect.y;
+
+				}
+
+			}
+
+			if((tank1.posRect.y <= 0 + tank1.posRect.h) && (tank1.Yvalue < 8000)){
+
+			//adjust position floats based on speed, direction and deltaTime
+			Y_pos += (tank1.speed)*deltaTime;
+
+			if((bkgdRect.y < 0)){
+				//update bullet position with code to account for precision loss
+				bkgdRect.y = (int)(Y_pos + 0.5f);
+				//move the turret
+				turret1.TankMoveY(tank1.speed, deltaTime);
+				turret2.TankMoveY(tank1.speed, deltaTime);
+				turret3.TankMoveY(tank1.speed, deltaTime);
+				turret4.TankMoveY(tank1.speed, deltaTime);
+
+			}else{
+				Y_pos = bkgdRect.y;
+			}
+
+		}
+
+
 		turret1.Update(deltaTime, tank1.posRect);
+		turret2.Update(deltaTime, tank1.posRect);
+		turret3.Update(deltaTime, tank1.posRect);
+		turret4.Update(deltaTime, tank1.posRect);
+
+		//check for hit from turret1
+		for (int i = 0; i < turret1.bulletList.size(); i++)
+		{
+			if(SDL_HasIntersection(&tank1.posRect, &turret1.bulletList[i].posRect)){
+				turret1.bulletList[i].Reset();
+				playerHealth--;
+				PlayerText(renderer);
+				break;
+			}
+		}
+
+		//check for hit from turret2
+		for (int i = 0; i < turret2.bulletList.size(); i++)
+		{
+			if(SDL_HasIntersection(&tank1.posRect, &turret2.bulletList[i].posRect)){
+				turret2.bulletList[i].Reset();
+				playerHealth--;
+				PlayerText(renderer);
+				break;
+			}
+		}
+
+		//check for hit from turret3
+		for (int i = 0; i < turret3.bulletList.size(); i++)
+		{
+			if(SDL_HasIntersection(&tank1.posRect, &turret3.bulletList[i].posRect)){
+				turret3.bulletList[i].Reset();
+				playerHealth--;
+				PlayerText(renderer);
+				break;
+			}
+		}
+
+		//check for hit from turret4
+		for (int i = 0; i < turret4.bulletList.size(); i++)
+		{
+			if(SDL_HasIntersection(&tank1.posRect, &turret4.bulletList[i].posRect)){
+				turret4.bulletList[i].Reset();
+				playerHealth--;
+				PlayerText(renderer);
+				break;
+			}
+		}
+
+		//check if the player hit a turret
+		for(int i = 0; i < tank1.bulletList.size(); i++)
+		{
+			//turret 1
+			if(SDL_HasIntersection(&turret1.baseRect, &tank1.bulletList[i].posRect)){
+				tank1.bulletList[i].Reset();
+				TurretText(renderer, 1);
+				break;
+			}
+
+			//turret 2
+			if(SDL_HasIntersection(&turret2.baseRect, &tank1.bulletList[i].posRect)){
+				tank1.bulletList[i].Reset();
+				TurretText(renderer, 2);
+				break;
+			}
+
+			//turret 3
+			if(SDL_HasIntersection(&turret3.baseRect, &tank1.bulletList[i].posRect)){
+				tank1.bulletList[i].Reset();
+				TurretText(renderer, 3);
+				break;
+			}
+
+			//turret 2
+			if(SDL_HasIntersection(&turret4.baseRect, &tank1.bulletList[i].posRect)){
+				tank1.bulletList[i].Reset();
+				TurretText(renderer, 4);
+				break;
+			}
+		}
+
+
+
 
 		//draw section
 		//clear the SDL RendererTarget
 		SDL_RenderClear(renderer);
 
+		SDL_RenderCopy(renderer,bkgd,NULL, &bkgdRect);
+
 		tank1.Draw(renderer);
 
-		turret1.Draw(renderer);
+		turret2.Draw(renderer);
+		turret3.Draw(renderer);
+		turret4.Draw(renderer);
+
+		//draw the player hit texture using the vars texture and posRect
+		SDL_RenderCopy(renderer, playerTexture, NULL, &playerPos);
+
+		//draw the turret hit texture using the vars texture and posRect
+		SDL_RenderCopy(renderer, turretTexture, NULL, &turretPos);
 
 		SDL_RenderPresent(renderer);
 

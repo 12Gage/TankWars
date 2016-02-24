@@ -17,7 +17,7 @@ Tank::Tank(SDL_Renderer *renderer, int pNum, string filePath, string audioPath, 
 	speed = 200.0f;
 
 	//tank firing sound
-	fire = Mix_LoadWAV((audioPath + "fire.wav").c_str());
+	fire = Mix_LoadWAV((audioPath + "laser.wav").c_str());
 
 	//see if this is player 1, or player 2, and create the correct file path
 	if(playerNum == 0){
@@ -69,10 +69,10 @@ Tank::Tank(SDL_Renderer *renderer, int pNum, string filePath, string audioPath, 
 	for(int i = 0; i < 10; i++)
 	{
 		//create the bullet and move offscreen, out of the game play area
-		//TankBullet tmpBullet(renderer,bulletPath,-1000,0,0);
+		TankBullet tmpBullet(renderer,bulletPath,-1000,-1000,0,0);
 
 		//add to bulletlist
-		//bulletList.push_back(tmpBullet);
+		bulletList.push_back(tmpBullet);
 	}
 
 }
@@ -81,25 +81,31 @@ Tank::Tank(SDL_Renderer *renderer, int pNum, string filePath, string audioPath, 
 void Tank::Update(float deltaTime)
 {
 	//check for gampad input
-	if(xDir != 0 || yDir != 0){
+	if(Xvalue != 0 || Yvalue != 0){
 		//get the angle between the tank and the turret
-		x = posRect.x - xDir;
-		y = posRect.y - yDir;
-		tankangle = atan2(yDir,xDir) * 180/3.14;
+		tankangle = atan2(Yvalue,Xvalue) * 180/3.14;
+
 		//set this as the old angfle and dir some the player/tank can shoot when stopped
 		oldAngle = tankangle;
-		xDirOld = xDir;
-		yDirOld = yDir;
+
+		//gives us radians
+		float radians = (tankangle * 3.14)/180;
+
+		//get need x and y values to move
+		float move_x = speed *cos(radians);
+		float move_y = speed *sin(radians);
+
+		//update floats for precision loss
+		pos_X += (move_x) * deltaTime;
+		pos_X += (move_y) * deltaTime;
+
+		//update player position with code to account for precision loss
+		posRect.x = (int)(pos_X + 0.5f);
+		posRect.y = (int)(pos_Y + 0.5f);
+
 	}else {
 		tankangle = oldAngle;
 	}
-	//adjust position floats based on speed, direction of joystick axis and deltaTime
-	pos_X += (speed* xDir) * deltaTime;
-	pos_Y += (speed* yDir) * deltaTime;
-
-	//update player position with code to account for precision loss
-	posRect.x = (int)(pos_X + 0.5f);
-	posRect.y = (int)(pos_Y + 0.5f);
 
 	//check if the tank is off screen and set it back
 	if(posRect.x < 0){
@@ -183,82 +189,22 @@ void Tank::OnControllerButton(const SDL_ControllerButtonEvent event)
 	}
 }
 
-void Tank::OnControllerAxis(const SDL_ControllerAxisEvent event)
+void Tank::OnControllerAxis(Sint16 X, Sint16 Y)
 {
-//if the player's number is 0  and the joystick axis is from joystick 0
-	if(event.which == 0 && playerNum == 0)
-	{
-		//X axis
-		if(event.axis == 0)
-		{
-			if(event.value < - JOYSTICK_DEAD_ZONE)
-			{
-				xDir = -1.0f;//left
-			}
-			else if(event.value > JOYSTICK_DEAD_ZONE)
-			{
-				xDir = 1.0f; //right
-			}
-			else
-			{
-				xDir = 0.0f;//none
-			}
-		}
+	Xvalue = X;
+	Yvalue = Y;
 
-		//Y axis
-		if(event.axis == 1)
-		{
-			if(event.value < - JOYSTICK_DEAD_ZONE)
-			{
-				yDir = -1.0f;//left
-			}
-			else if(event.value > JOYSTICK_DEAD_ZONE)
-			{
-				yDir = 1.0f; //right
-			}
-			else
-			{
-				yDir = 0.0f;//none
-			}
-		}
+	if(!(Xvalue < -JOYSTICK_DEAD_ZONE)&&!(Xvalue > JOYSTICK_DEAD_ZONE))
+	{
+		Xvalue = 0.0f; //none
 	}
 
-	if(event.which == 1 && playerNum == 1)
+	if(!(Yvalue < -JOYSTICK_DEAD_ZONE)&&!(Yvalue > JOYSTICK_DEAD_ZONE))
 	{
-		//X axis
-		if(event.axis == 0)
-		{
-			if(event.value < - JOYSTICK_DEAD_ZONE)
-			{
-				xDir = -1.0f;//left
-			}
-			else if(event.value > JOYSTICK_DEAD_ZONE)
-			{
-				xDir = 1.0f; //right
-			}
-			else
-			{
-				xDir = 0.0f;//none
-			}
-		}
-
-		//Y axis
-		if(event.axis == 1)
-		{
-			if(event.value < - JOYSTICK_DEAD_ZONE)
-			{
-				yDir = -1.0f;//left
-			}
-			else if(event.value > JOYSTICK_DEAD_ZONE)
-			{
-				yDir = 1.0f; //right
-			}
-			else
-			{
-				yDir = 0.0f;//none
-			}
-		}
+		Yvalue = 0.0f; //none
 	}
+
+
 }
 
 //create a bullet
@@ -290,15 +236,14 @@ void Tank::CreateBullet(){
 		bulletList[i].pos_Y = bulletList[i].posRect.y;
 
 		//if the tank is moving fire in the direction
-		if(xDir != 0 || yDir != 0){
+		if(Xvalue != 0 || Yvalue != 0){
 			//set the x and y positions fo the bullet's float positions
-			bulletList[i].xDir = xDir;
-			bulletList[i].yDir = yDir;
+			bulletList[i].tankangle = tankangle;
+
 		}else{
 			//if the tank is not moving, fire in the direction currently facing
 			//set the x and y positions of the bullet's float positions
-			bulletList[i].xDir = xDirOld;
-			bulletList[i].yDir = yDirOld;
+			bulletList[i].tankangle = oldAngle;
 			}
 
 		//once bullet is found, break out of loop

@@ -28,8 +28,8 @@ TankBullet::TankBullet(SDL_Renderer *renderer, string filePath, float x, float y
 
 	//initialize the direction vars for the bullet
 	//no X movement, on Y movement
-	xDir = dirX;
-	yDir = dirY;
+	//xDir = dirX;
+	//yDir = dirY;
 }
 
 //reset the bullet method
@@ -57,8 +57,16 @@ void TankBullet::Update(float deltaTime) //float delta
 	if (active) {
 
 		//adjust position floats based on speed, direction (-1 for up), and deltaTime
-		pos_X += (speed * xDir) * deltaTime;
-		pos_Y += (speed * yDir) * deltaTime;
+		//pos_X += (speed * xDir) * deltaTime;
+		//pos_Y += (speed * yDir) * deltaTime;
+
+		float radians = (tankangle * 3.14)/180;
+
+		float move_x = speed * cos(radians);
+		float move_y = speed * sin(radians);
+
+		pos_X += (move_x)*deltaTime;
+		pos_Y += (move_y)*deltaTime;
 
 		// update bullet position with code to account for precision loss
 		posRect.x = (int)(pos_X + 0.5f);

@@ -40,8 +40,11 @@ public:
 	//bullet float positionsw to prevent precision loss
 	float pos_X, pos_Y;
 
+	//tank angle passed in
+	float tankangle;
+
 	//bullet creation method. requires the renderer, a path to the needed image, an X position, a Y position
-	TankBullet(SDL_Renderer *renderer, string filePath, float x, float y, int dirX, int dirY);
+	TankBullet (SDL_Renderer *renderer, string filePath, float x, float y, int dirX, int dirY);
 
 	//bullet update - requires  deltaTime be passed
 	void Update(float deltaTime);

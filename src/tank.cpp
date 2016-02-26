@@ -6,7 +6,7 @@ const int JOYSTICK_DEAD_ZONE = 8000;
 //tank creation
 Tank::Tank(SDL_Renderer *renderer, int pNum, string filePath, string audioPath, float x, float y)
 {
-
+//bill
 	//activate the player
 	active = true;
 

@@ -142,10 +142,10 @@ int main(){
 
 
 //create a SDL Window refernece - pointer
-	SDL_Window* window = nullptr;
+	SDL_Window* window = NULL;
 
 	//create a SDL RenderTarget - pointer
-	SDL_Renderer *renderer= nullptr;
+	SDL_Renderer *renderer = NULL;
 
 	//create a SDL Window in the midddle of the ascreen
 	window = SDL_CreateWindow("Tank Wars!",

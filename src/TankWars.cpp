@@ -23,7 +23,7 @@ string audio_dir = currentWorkingDirectory + "/src/";
 #include "SDL_image.h"
 #include "SDL_mixer.h"
 #include <direct.h>
-#define getcw _getcw
+#define getcwd _getcwd
 
 string currentWorkingDirectory(getcwd(NULL, 0));
 string images_dir = currentWorkingDirectory + "/src/";

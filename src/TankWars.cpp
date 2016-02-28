@@ -465,6 +465,7 @@ int main(){
 
 		tank1.Draw(renderer);
 
+		turret1.Draw(renderer);
 		turret2.Draw(renderer);
 		turret3.Draw(renderer);
 		turret4.Draw(renderer);

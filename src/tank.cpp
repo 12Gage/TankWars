@@ -97,7 +97,7 @@ void Tank::Update(float deltaTime)
 
 		//update floats for precision loss
 		pos_X += (move_x) * deltaTime;
-		pos_X += (move_y) * deltaTime;
+		pos_Y += (move_y) * deltaTime;
 
 		//update player position with code to account for precision loss
 		posRect.x = (int)(pos_X + 0.5f);

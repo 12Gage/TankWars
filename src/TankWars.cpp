@@ -330,12 +330,12 @@ int main(){
 		}
 
 			//move background
-			if((tank1.posRect.y >= 1024 - tank1.posRect.h) && (tank1.Yvalue > 8000)){
+			if((tank1.posRect.y >= 768 - tank1.posRect.h) && (tank1.Yvalue > 8000)){
 
 				//adjust position floats based on speed, direction and deltaTime
 				Y_pos -= (tank1.speed)*deltaTime;
 
-				if((bkgdRect.y > - 1024)){
+				if((bkgdRect.y > - 768)){
 					//update bullet position with code to account for precision loss
 					bkgdRect.y = (int)(Y_pos + 0.5f);
 					//move the turret

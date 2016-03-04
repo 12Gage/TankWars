@@ -33,7 +33,7 @@ Turrent::Turrent(SDL_Renderer *renderer, string filePath, string audioPath, floa
 
 	//set the SDL_Rect X and Y for the barrel (used Photoshop to find this info)
 	barrelRect.x = x + 20;
-	barrelRect.y = y + 20;
+	barrelRect.y = y - 20;
 
 	//use SDL_QueryTexture to get the W and H of the barrel's texture
 	SDL_QueryTexture(tBarrel, NULL, NULL, &w, &h);

@@ -32,6 +32,22 @@ using namespace std;
 class Tank{
 
 public:
+
+	//textures for helth bar
+	SDL_Texture *back, *mid, *front;
+
+	//rectangles for the health bar images
+	SDL_Rect backR, midR,frontR;
+
+	//player health
+	float playerHealth, maxHealth;
+
+	//tank hit by eTank
+	void eTankHit();
+
+	//tank hit by turret bullet
+	void eBulletHit();
+
 	//is the player active - still alive?
 	bool active;
 

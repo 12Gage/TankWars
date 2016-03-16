@@ -48,6 +48,7 @@ string audio_dir = currentWorkingDirectory + "/src/";
 
 #include "tank.h"
 #include "turrent.h"
+#include "enemyTank.h"
 
 
 //variable for what font to use
@@ -81,7 +82,8 @@ void PlayerText(SDL_Renderer *renderer){
 	Result = convert.str(); //	set 'Result to the contents of the stream
 
 	//create the text for the font texture
-	tempText = "Player Health: " + Result;
+	//tempText = "Player Health: " + Result;
+	tempText = "Player Health: ";
 
 	//surface for font string
 	playerSurface = TTF_RenderText_Solid(font, tempText.c_str(), colorP1);
@@ -195,6 +197,11 @@ int main(){
 	Turrent turret3 = Turrent(renderer, images_dir.c_str(), audio_dir.c_str(), 400.0f, 1000.0f);
 	Turrent turret4 = Turrent(renderer, images_dir.c_str(), audio_dir.c_str(), 1600.0f, 1250.0f);
 
+	EnemyTank eTank1 = EnemyTank(renderer, images_dir.c_str(), audio_dir.c_str(), 400.0f, 200.f);
+	EnemyTank eTank2 = EnemyTank(renderer, images_dir.c_str(), audio_dir.c_str(), 1400.0f, 300.f);
+	EnemyTank eTank3 = EnemyTank(renderer, images_dir.c_str(), audio_dir.c_str(), 600.0f, 1200.f);
+	EnemyTank eTank4 = EnemyTank(renderer, images_dir.c_str(), audio_dir.c_str(), 1700.0f, 600.f);
+
 	SDL_Texture *bkgd = IMG_LoadTexture(renderer, (images_dir + "ground.png").c_str());
 
 	SDL_Rect bkgdRect;
@@ -301,6 +308,12 @@ int main(){
 				turret3.TankMoveX(-tank1.speed, deltaTime);
 				turret4.TankMoveX(-tank1.speed, deltaTime);
 
+				//move enemy tanks
+				eTank1.eTankMoveX(-tank1.speed, deltaTime);
+				eTank2.eTankMoveX(-tank1.speed, deltaTime);
+				eTank3.eTankMoveX(-tank1.speed, deltaTime);
+				eTank4.eTankMoveX(-tank1.speed, deltaTime);
+
 			}else{
 
 			X_pos = bkgdRect.x;
@@ -323,6 +336,12 @@ int main(){
 				turret3.TankMoveX(tank1.speed, deltaTime);
 				turret4.TankMoveX(tank1.speed, deltaTime);
 
+				//move enemy tanks
+				eTank1.eTankMoveX(tank1.speed, deltaTime);
+				eTank2.eTankMoveX(tank1.speed, deltaTime);
+				eTank3.eTankMoveX(tank1.speed, deltaTime);
+				eTank4.eTankMoveX(tank1.speed, deltaTime);
+
 			}else{
 				X_pos = bkgdRect.x;
 			}
@@ -343,6 +362,12 @@ int main(){
 					turret2.TankMoveY(-tank1.speed, deltaTime);
 					turret3.TankMoveY(-tank1.speed, deltaTime);
 					turret4.TankMoveY(-tank1.speed, deltaTime);
+
+					//move enemy tanks
+					eTank1.eTankMoveY(-tank1.speed, deltaTime);
+					eTank2.eTankMoveY(-tank1.speed, deltaTime);
+					eTank3.eTankMoveY(-tank1.speed, deltaTime);
+					eTank4.eTankMoveY(-tank1.speed, deltaTime);
 
 				}else{
 
@@ -366,6 +391,12 @@ int main(){
 				turret3.TankMoveY(tank1.speed, deltaTime);
 				turret4.TankMoveY(tank1.speed, deltaTime);
 
+				//move enemy tanks
+				eTank1.eTankMoveY(tank1.speed, deltaTime);
+				eTank2.eTankMoveY(tank1.speed, deltaTime);
+				eTank3.eTankMoveY(tank1.speed, deltaTime);
+				eTank4.eTankMoveY(tank1.speed, deltaTime);
+
 			}else{
 				Y_pos = bkgdRect.y;
 			}
@@ -378,13 +409,20 @@ int main(){
 		turret3.Update(deltaTime, tank1.posRect);
 		turret4.Update(deltaTime, tank1.posRect);
 
+		//enemy tank update
+		eTank1.Update(deltaTime, tank1.posRect);
+		eTank2.Update(deltaTime, tank1.posRect);
+		eTank3.Update(deltaTime, tank1.posRect);
+		eTank4.Update(deltaTime, tank1.posRect);
+
 		//check for hit from turret1
 		for (int i = 0; i < turret1.bulletList.size(); i++)
 		{
 			if(SDL_HasIntersection(&tank1.posRect, &turret1.bulletList[i].posRect)){
 				turret1.bulletList[i].Reset();
-				playerHealth--;
-				PlayerText(renderer);
+				//playerHealth--;
+				//PlayerText(renderer);
+				tank1.eBulletHit();
 				break;
 			}
 		}
@@ -394,8 +432,9 @@ int main(){
 		{
 			if(SDL_HasIntersection(&tank1.posRect, &turret2.bulletList[i].posRect)){
 				turret2.bulletList[i].Reset();
-				playerHealth--;
-				PlayerText(renderer);
+				//playerHealth--;
+				//PlayerText(renderer);
+				tank1.eBulletHit();
 				break;
 			}
 		}
@@ -405,8 +444,9 @@ int main(){
 		{
 			if(SDL_HasIntersection(&tank1.posRect, &turret3.bulletList[i].posRect)){
 				turret3.bulletList[i].Reset();
-				playerHealth--;
-				PlayerText(renderer);
+				//playerHealth--;
+				//PlayerText(renderer);
+				tank1.eBulletHit();
 				break;
 			}
 		}
@@ -416,8 +456,9 @@ int main(){
 		{
 			if(SDL_HasIntersection(&tank1.posRect, &turret4.bulletList[i].posRect)){
 				turret4.bulletList[i].Reset();
-				playerHealth--;
-				PlayerText(renderer);
+				//playerHealth--;
+				//PlayerText(renderer);
+				tank1.eBulletHit();
 				break;
 			}
 		}
@@ -432,10 +473,28 @@ int main(){
 				break;
 			}
 
+			//eTank 1
+			if(SDL_HasIntersection(&eTank1.eTankRect, &tank1.bulletList[i].posRect)){
+				tank1.bulletList[i].Reset();
+				if(eTank1.active == true){
+					eTank1.RemoveHealth();
+				}
+				break;
+			}
+
 			//turret 2
 			if(SDL_HasIntersection(&turret2.baseRect, &tank1.bulletList[i].posRect)){
 				tank1.bulletList[i].Reset();
 				TurretText(renderer, 2);
+				break;
+			}
+
+			//eTank 2
+			if(SDL_HasIntersection(&eTank2.eTankRect, &tank1.bulletList[i].posRect)){
+				tank1.bulletList[i].Reset();
+				if(eTank2.active == true){
+					eTank2.RemoveHealth();
+				}
 				break;
 			}
 
@@ -446,15 +505,48 @@ int main(){
 				break;
 			}
 
-			//turret 2
+			//eTank 3
+			if(SDL_HasIntersection(&eTank3.eTankRect, &tank1.bulletList[i].posRect)){
+				tank1.bulletList[i].Reset();
+				if(eTank3.active == true){
+					eTank3.RemoveHealth();
+				}
+				break;
+			}
+
+			//turret 4
 			if(SDL_HasIntersection(&turret4.baseRect, &tank1.bulletList[i].posRect)){
 				tank1.bulletList[i].Reset();
 				TurretText(renderer, 4);
 				break;
 			}
+
+			//eTank 4
+			if(SDL_HasIntersection(&eTank4.eTankRect, &tank1.bulletList[i].posRect)){
+				tank1.bulletList[i].Reset();
+				if(eTank4.active == true){
+					eTank4.RemoveHealth();
+				}
+				break;
+			}
 		}
 
-
+		//check so see if the player has been hit by the enemy tank
+		if(SDL_HasIntersection(&tank1.posRect, &eTank1.eTankRect)){
+			tank1.eTankHit();
+		}
+		//check so see if the player has been hit by the enemy tank
+		if(SDL_HasIntersection(&tank1.posRect, &eTank2.eTankRect)){
+			tank1.eTankHit();
+		}
+		//check so see if the player has been hit by the enemy tank
+		if(SDL_HasIntersection(&tank1.posRect, &eTank3.eTankRect)){
+			tank1.eTankHit();
+		}
+		//check so see if the player has been hit by the enemy tank
+		if(SDL_HasIntersection(&tank1.posRect, &eTank4.eTankRect)){
+			tank1.eTankHit();
+		}
 
 
 		//draw section
@@ -464,6 +556,11 @@ int main(){
 		SDL_RenderCopy(renderer,bkgd,NULL, &bkgdRect);
 
 		tank1.Draw(renderer);
+
+		eTank1.Draw(renderer);
+		eTank2.Draw(renderer);
+		eTank3.Draw(renderer);
+		eTank4.Draw(renderer);
 
 		turret1.Draw(renderer);
 		turret2.Draw(renderer);

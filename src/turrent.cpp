@@ -33,7 +33,7 @@ Turrent::Turrent(SDL_Renderer *renderer, string filePath, string audioPath, floa
 
 	//set the SDL_Rect X and Y for the barrel (used Photoshop to find this info)
 	barrelRect.x = x + 20;
-	barrelRect.y = y - 20;
+	barrelRect.y = y + 20;
 
 	//use SDL_QueryTexture to get the W and H of the barrel's texture
 	SDL_QueryTexture(tBarrel, NULL, NULL, &w, &h);
@@ -41,8 +41,8 @@ Turrent::Turrent(SDL_Renderer *renderer, string filePath, string audioPath, floa
 	barrelRect.h = h;
 
 	//create the center point of the barrel texture for rotation (used photoshop to fin this info)
-	center.x = 10;
-	center.y = 10;
+	center.x = 32;
+	center.y = 32;
 
 	//string to create the path to the player's bullert image
 	string bulletPath = filePath + "tBullet.png";
@@ -51,7 +51,7 @@ Turrent::Turrent(SDL_Renderer *renderer, string filePath, string audioPath, floa
 	for(int i = 0; i < 10; i++)
 	{
 		//create the bullet and move offacreen, out of the game play area
-		TurretBullet tmpBullet(renderer, bulletPath, 500, 500);
+		TurretBullet tmpBullet(renderer, bulletPath, 1500, 1500);
 
 		//add to bulletList
 		bulletList.push_back(tmpBullet);

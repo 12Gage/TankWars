@@ -6,7 +6,20 @@ const int JOYSTICK_DEAD_ZONE = 8000;
 //tank creation
 Tank::Tank(SDL_Renderer *renderer, int pNum, string filePath, string audioPath, float x, float y)
 {
-//bill
+	//load health GUI
+	back = IMG_LoadTexture(renderer, (filePath + "health_1.png").c_str());
+	mid = IMG_LoadTexture(renderer, (filePath + "health_2.png").c_str());
+	front = IMG_LoadTexture(renderer, (filePath + "health_3.png").c_str());
+
+	backR.x = midR.x = frontR.x = 10;
+	backR.y = midR.y = frontR.y = 50;
+	backR.w = midR.w = frontR.w = 239;
+	backR.h = midR.h = frontR.h = 32;
+
+	//player health
+	playerHealth = 100.f;
+	maxHealth = 100.0f;
+
 	//activate the player
 	active = true;
 
@@ -140,6 +153,22 @@ void Tank::Update(float deltaTime)
 	  }
 }
 
+//hit by eTank
+void Tank::eTankHit(){
+
+	playerHealth -= .025f;
+
+	midR.w = playerHealth/maxHealth * 239;
+}
+
+//hit by eBullet
+void Tank::eBulletHit(){
+
+	playerHealth -= 5;
+
+	midR.w = playerHealth/maxHealth *239;
+}
+
 
 void Tank::Draw(SDL_Renderer *renderer)
 {
@@ -156,6 +185,10 @@ void Tank::Draw(SDL_Renderer *renderer)
 
 	//draw the player texture using the cars texture and posRect
 	SDL_RenderCopyEx(renderer, texture, NULL, &posRect, tankangle, &center, SDL_FLIP_NONE);
+
+	SDL_RenderCopy(renderer, back, NULL, &backR);
+	SDL_RenderCopy(renderer, mid, NULL, &midR);
+	SDL_RenderCopy(renderer, front, NULL, &frontR);
 
 }
 

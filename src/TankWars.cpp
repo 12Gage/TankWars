@@ -49,6 +49,7 @@ string audio_dir = currentWorkingDirectory + "/src/";
 #include "tank.h"
 #include "turrent.h"
 #include "enemyTank.h"
+#include "jewel.h"
 
 
 //variable for what font to use
@@ -238,6 +239,44 @@ int main(int argc, char *argv[]){
 	//create the initial turret text
 	TurretText(renderer, 0);
 
+	//jewel hud
+
+	SDL_Texture *Jewelsbkgd = IMG_LoadTexture(renderer, (images_dir + "jewelsBKGD.png").c_str());
+	SDL_Rect JewelsbkgdRect;
+	JewelsbkgdRect.x = 370;
+	JewelsbkgdRect.y = 10;
+	JewelsbkgdRect.w = 284;
+	JewelsbkgdRect.h = 91;
+
+	SDL_Texture *purple = IMG_LoadTexture(renderer, (images_dir + "jewelsPurple.png").c_str());
+	SDL_Rect purplePos;
+	JewelsbkgdRect.x = 370;
+	JewelsbkgdRect.y = 10;
+	JewelsbkgdRect.w = 284;
+	JewelsbkgdRect.h = 91;
+
+	SDL_Texture *red = IMG_LoadTexture(renderer, (images_dir + "jewelsRed.png").c_str());
+	SDL_Rect redPos;
+	JewelsbkgdRect.x = 370;
+	JewelsbkgdRect.y = 10;
+	JewelsbkgdRect.w = 284;
+	JewelsbkgdRect.h = 91;
+
+	SDL_Texture *blue = IMG_LoadTexture(renderer, (images_dir + "jewelsBlue.png").c_str());
+	SDL_Rect bluePos;
+	JewelsbkgdRect.x = 370;
+	JewelsbkgdRect.y = 10;
+	JewelsbkgdRect.w = 284;
+	JewelsbkgdRect.h = 91;
+
+	bool havePurple = false;
+	bool haveRed = false;
+	bool haveBlue = false;
+
+	Jewel purpleJewel = Jewel(renderer, images_dir.c_str(), 0,200.0f,800.0f);
+	Jewel redJewel = Jewel(renderer, images_dir.c_str(), 1,1200.0f,350.0f);
+	Jewel blueJewel = Jewel(renderer, images_dir.c_str(), 2,1600.0f,1000.0f);
+
 
 	//main game loop start
 
@@ -314,6 +353,11 @@ int main(int argc, char *argv[]){
 				eTank3.eTankMoveX(-tank1.speed, deltaTime);
 				eTank4.eTankMoveX(-tank1.speed, deltaTime);
 
+				//move the jewels
+				purpleJewel.TankMoveX(-tank1.speed,deltaTime);
+				redJewel.TankMoveX(-tank1.speed,deltaTime);
+				blueJewel.TankMoveX(-tank1.speed,deltaTime);
+
 			}else{
 
 			X_pos = bkgdRect.x;
@@ -342,6 +386,11 @@ int main(int argc, char *argv[]){
 				eTank3.eTankMoveX(tank1.speed, deltaTime);
 				eTank4.eTankMoveX(tank1.speed, deltaTime);
 
+				//move the jewels
+				purpleJewel.TankMoveX(tank1.speed,deltaTime);
+				redJewel.TankMoveX(tank1.speed,deltaTime);
+				blueJewel.TankMoveX(tank1.speed,deltaTime);
+
 			}else{
 				X_pos = bkgdRect.x;
 			}
@@ -368,6 +417,11 @@ int main(int argc, char *argv[]){
 					eTank2.eTankMoveY(-tank1.speed, deltaTime);
 					eTank3.eTankMoveY(-tank1.speed, deltaTime);
 					eTank4.eTankMoveY(-tank1.speed, deltaTime);
+
+					//move the jewels
+					purpleJewel.TankMoveY(-tank1.speed,deltaTime);
+					redJewel.TankMoveY(-tank1.speed,deltaTime);
+					blueJewel.TankMoveY(-tank1.speed,deltaTime);
 
 				}else{
 
@@ -396,6 +450,11 @@ int main(int argc, char *argv[]){
 				eTank2.eTankMoveY(tank1.speed, deltaTime);
 				eTank3.eTankMoveY(tank1.speed, deltaTime);
 				eTank4.eTankMoveY(tank1.speed, deltaTime);
+
+				//move the jewels
+				purpleJewel.TankMoveY(tank1.speed,deltaTime);
+				redJewel.TankMoveY(tank1.speed,deltaTime);
+				blueJewel.TankMoveY(tank1.speed,deltaTime);
 
 			}else{
 				Y_pos = bkgdRect.y;
@@ -529,6 +588,28 @@ int main(int argc, char *argv[]){
 				}
 				break;
 			}
+
+			//check to see if the player has been hit by the purple jewel
+			if(SDL_HasIntersection(&tank1.posRect, &purpleJewel.jewelRect)){
+				havePurple = true;
+				purpleJewel.active = false;
+				purpleJewel.jewelRect.x = -5000;
+				purpleJewel.jewelRect.y = -5000;
+			}
+
+			if(SDL_HasIntersection(&tank1.posRect, &redJewel.jewelRect)){
+				haveRed = true;
+				redJewel.active = false;
+				redJewel.jewelRect.x = -5000;
+				redJewel.jewelRect.y = -5000;
+			}
+
+			if(SDL_HasIntersection(&tank1.posRect, &blueJewel.jewelRect)){
+				haveBlue = true;
+				blueJewel.active = false;
+				blueJewel.jewelRect.x = -5000;
+				blueJewel.jewelRect.y = -5000;
+			}
 		}
 
 		//check so see if the player has been hit by the enemy tank
@@ -554,6 +635,31 @@ int main(int argc, char *argv[]){
 		SDL_RenderClear(renderer);
 
 		SDL_RenderCopy(renderer,bkgd,NULL, &bkgdRect);
+
+		//draw the jewelsbkgd UI
+		SDL_RenderCopy(renderer, Jewelsbkgd, NULL, &JewelsbkgdRect);
+
+		//draw the red UI
+		if(haveRed)
+		SDL_RenderCopy(renderer, red, NULL, &redPos);
+
+		//draw the blue UI
+		if(haveBlue)
+		SDL_RenderCopy(renderer, blue, NULL, &bluePos);
+
+		//draw the purple UI
+		if(havePurple)
+		SDL_RenderCopy(renderer, purple, NULL, &purplePos);
+
+		//draw the purple jewel onscree
+		if(purpleJewel.active)
+		purpleJewel.Draw(renderer);
+
+		if(redJewel.active)
+		redJewel.Draw(renderer);
+
+		if(blueJewel.active)
+		blueJewel.Draw(renderer);
 
 		tank1.Draw(renderer);
 

@@ -137,7 +137,7 @@ int thisTime = 0;
 int lastTime = 0;
 
 //main start
-int main(int argc, char *argv[]){
+int main(){
 
 	//create the SDL Window - start
 	//start SDL2
@@ -250,24 +250,24 @@ int main(int argc, char *argv[]){
 
 	SDL_Texture *purple = IMG_LoadTexture(renderer, (images_dir + "jewelsPurple.png").c_str());
 	SDL_Rect purplePos;
-	JewelsbkgdRect.x = 370;
-	JewelsbkgdRect.y = 10;
-	JewelsbkgdRect.w = 284;
-	JewelsbkgdRect.h = 91;
+	purplePos.x = 370;
+	purplePos.y = 10;
+	purplePos.w = 284;
+	purplePos.h = 91;
 
 	SDL_Texture *red = IMG_LoadTexture(renderer, (images_dir + "jewelsRed.png").c_str());
 	SDL_Rect redPos;
-	JewelsbkgdRect.x = 370;
-	JewelsbkgdRect.y = 10;
-	JewelsbkgdRect.w = 284;
-	JewelsbkgdRect.h = 91;
+	redPos.x = 370;
+	redPos.y = 10;
+	redPos.w = 284;
+	redPos.h = 91;
 
 	SDL_Texture *blue = IMG_LoadTexture(renderer, (images_dir + "jewelsBlue.png").c_str());
 	SDL_Rect bluePos;
-	JewelsbkgdRect.x = 370;
-	JewelsbkgdRect.y = 10;
-	JewelsbkgdRect.w = 284;
-	JewelsbkgdRect.h = 91;
+	bluePos.x = 370;
+	bluePos.y = 10;
+	bluePos.w = 284;
+	bluePos.h = 91;
 
 	bool havePurple = false;
 	bool haveRed = false;

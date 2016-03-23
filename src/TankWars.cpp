@@ -277,6 +277,32 @@ int main(){
 	Jewel redJewel = Jewel(renderer, images_dir.c_str(), 1,1200.0f,350.0f);
 	Jewel blueJewel = Jewel(renderer, images_dir.c_str(), 2,1600.0f,1000.0f);
 
+	//folder stuff
+	Jewel folder1 = Jewel(renderer, images_dir.c_str(), 3, 600.0f, 350.0f);
+	Jewel folder2 = Jewel(renderer, images_dir.c_str(), 3, 1200.0f, 600.0f);
+	Jewel folder3 = Jewel(renderer, images_dir.c_str(), 3, 550.0f, 1000.0f);
+	Jewel folder4 = Jewel(renderer, images_dir.c_str(), 3, 1400.0f, 1200.0f);
+
+	//folder bar stuff
+	SDL_Texture *folderB = IMG_LoadTexture(renderer, (images_dir + "folderBKGD.png").c_str());
+	SDL_Texture *folderM = IMG_LoadTexture(renderer, (images_dir + "movingBar.png").c_str());
+	SDL_Texture *folderF = IMG_LoadTexture(renderer, (images_dir + "folderFront.png").c_str());
+
+	SDL_Rect folderRect;
+	folderRect.x = 310;
+	folderRect.y = 110;
+	folderRect.w = 368;
+	folderRect.h = 65;
+
+	SDL_Rect movingRect;
+	movingRect.x = 401;
+	movingRect.y = 125;
+	movingRect.w = 272;
+	movingRect.h = 27;
+
+	//folder info
+	float currentFolders = 0.0f;
+	float maxFolders = 100.0f;
 
 	//main game loop start
 
@@ -358,6 +384,13 @@ int main(){
 				redJewel.TankMoveX(-tank1.speed,deltaTime);
 				blueJewel.TankMoveX(-tank1.speed,deltaTime);
 
+				//move the folders
+				folder1.TankMoveX(-tank1.speed, deltaTime);
+				folder2.TankMoveX(-tank1.speed, deltaTime);
+				folder3.TankMoveX(-tank1.speed, deltaTime);
+				folder4.TankMoveX(-tank1.speed, deltaTime);
+
+
 			}else{
 
 			X_pos = bkgdRect.x;
@@ -391,6 +424,12 @@ int main(){
 				redJewel.TankMoveX(tank1.speed,deltaTime);
 				blueJewel.TankMoveX(tank1.speed,deltaTime);
 
+				//move the folders
+				folder1.TankMoveX(tank1.speed, deltaTime);
+				folder2.TankMoveX(tank1.speed, deltaTime);
+				folder3.TankMoveX(tank1.speed, deltaTime);
+				folder4.TankMoveX(tank1.speed, deltaTime);
+
 			}else{
 				X_pos = bkgdRect.x;
 			}
@@ -422,6 +461,13 @@ int main(){
 					purpleJewel.TankMoveY(-tank1.speed,deltaTime);
 					redJewel.TankMoveY(-tank1.speed,deltaTime);
 					blueJewel.TankMoveY(-tank1.speed,deltaTime);
+
+					//move the folders
+					folder1.TankMoveY(-tank1.speed, deltaTime);
+					folder2.TankMoveY(-tank1.speed, deltaTime);
+					folder3.TankMoveY(-tank1.speed, deltaTime);
+					folder4.TankMoveY(-tank1.speed, deltaTime);
+
 
 				}else{
 
@@ -456,6 +502,12 @@ int main(){
 				redJewel.TankMoveY(tank1.speed,deltaTime);
 				blueJewel.TankMoveY(tank1.speed,deltaTime);
 
+				//move the folders
+				folder1.TankMoveY(tank1.speed, deltaTime);
+				folder2.TankMoveY(tank1.speed, deltaTime);
+				folder3.TankMoveY(tank1.speed, deltaTime);
+				folder4.TankMoveY(tank1.speed, deltaTime);
+
 			}else{
 				Y_pos = bkgdRect.y;
 			}
@@ -473,6 +525,7 @@ int main(){
 		eTank2.Update(deltaTime, tank1.posRect);
 		eTank3.Update(deltaTime, tank1.posRect);
 		eTank4.Update(deltaTime, tank1.posRect);
+
 
 		//check for hit from turret1
 		for (int i = 0; i < turret1.bulletList.size(); i++)
@@ -612,6 +665,36 @@ int main(){
 			}
 		}
 
+		if(SDL_HasIntersection(&tank1.posRect, &folder1.jewelRect)){
+			folder1.active = false;
+			folder1.jewelRect.x = -5000;
+			folder1.jewelRect.y = -5000;
+			currentFolders += 100/4;
+		}
+
+		if(SDL_HasIntersection(&tank1.posRect, &folder2.jewelRect)){
+			folder2.active = false;
+			folder2.jewelRect.x = -5000;
+			folder2.jewelRect.y = -5000;
+			currentFolders += 100/4;
+		}
+
+		if(SDL_HasIntersection(&tank1.posRect, &folder3.jewelRect)){
+			folder3.active = false;
+			folder3.jewelRect.x = -5000;
+			folder3.jewelRect.y = -5000;
+			currentFolders += 100/4;
+		}
+
+		if(SDL_HasIntersection(&tank1.posRect, &folder4.jewelRect)){
+			folder4.active = false;
+			folder4.jewelRect.x = -5000;
+			folder4.jewelRect.y = -5000;
+			currentFolders += 100/4;
+		}
+
+		movingRect.w = currentFolders/maxFolders * 272;
+
 		//check so see if the player has been hit by the enemy tank
 		if(SDL_HasIntersection(&tank1.posRect, &eTank1.eTankRect)){
 			tank1.eTankHit();
@@ -651,6 +734,13 @@ int main(){
 		if(havePurple)
 		SDL_RenderCopy(renderer, purple, NULL, &purplePos);
 
+		//Draw the folder back UI
+		SDL_RenderCopy(renderer, folderB, NULL, &folderRect);
+		//Draw the folder back UI
+		SDL_RenderCopy(renderer, folderM, NULL, &movingRect);
+		//Draw the folder front UI
+		SDL_RenderCopy(renderer, folderF, NULL, &folderRect);
+
 		//draw the purple jewel onscree
 		if(purpleJewel.active)
 		purpleJewel.Draw(renderer);
@@ -660,6 +750,19 @@ int main(){
 
 		if(blueJewel.active)
 		blueJewel.Draw(renderer);
+
+		//draw the folder 1 onscreen
+		if(folder1.active)
+			folder1.Draw(renderer);
+		//draw the folder 2 onscreen
+		if(folder2.active)
+			folder2.Draw(renderer);
+		//draw the folder 3 onscreen
+		if(folder3.active)
+			folder3.Draw(renderer);
+		//draw the folder 4 onscreen
+		if(folder4.active)
+			folder4.Draw(renderer);
 
 		tank1.Draw(renderer);
 
